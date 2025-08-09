@@ -13,7 +13,31 @@
     <span>Information</span>
     <button id="closeBtn" aria-label="Close">&times;</button>
   </div>
-  <iframe srcdoc="<p style='font-family: Arial; font-size: 18px; margin: 20px;'>Hello!</p>"></iframe>
+  <iframe srcdoc="
+<h3>1. What is job assignment and scheduling?</h3>
+<p>Job assignment and scheduling is the process of allocating processes or tasks to resources (like CPU) and determining the order and timing of execution to optimize performance metrics such as turnaround time, waiting time, and response time.</p>
+
+<h3>2. What are the Job scheduling algorithms? (FCFS, Round Robin, Priority, SJF)</h3>
+<ul>
+  <li><strong>First Come First Serve (FCFS):</strong> Processes are executed in order of arrival.</li>
+  <li><strong>Round Robin:</strong> Processes are given a fixed time quantum in cyclic order.</li>
+  <li><strong>Priority Scheduling:</strong> Processes with higher priority (lower number) execute first.</li>
+  <li><strong>Shortest Job First (SJF):</strong> Processes with the shortest burst time execute first.</li>
+</ul>
+
+<h3>3. What is this website about?</h3>
+<p>This website is a Job Assignment and Scheduling Simulator that allows you to input processes with arrival time, burst time, and priority, and then simulate different scheduling algorithms to visualize execution order and performance metrics.</p>
+
+<h3>4. How to use this website?</h3>
+<p>Add processes by clicking "Add Row" and fill in process details. Select the scheduling algorithm by clicking "Algorithm" button. View the computed Completion, Turn Around, Waiting, and Response times automatically. You can also see the execution order with the "Representation" button.</p>
+
+<h3>5. How to give inputs?</h3>
+<p>Click "Add Row" to add new processes. Enter process name (text), arrival time, burst time, and optionally priority (for Priority Scheduling) in the respective table columns. Outputs will be calculated automatically.</p>
+
+<h3>6. Where to see the outputs?</h3>
+<p>The output columns Completion Time, Turn Around Time, Waiting Time, and Response Time are shown in the table as read-only cells. Average Turn Around Time and Average Waiting Time are displayed in the bottom bar. The execution order is shown in a popup when you click the "Representation" button.</p>
+
+    "></iframe>
 </div>
   <h2>Job Assignment and Scheduling Simulator</h2>
   <div class="table-container">
@@ -86,6 +110,7 @@
 <script src="jobassignmentandschedulingjs.js"></script>
 </body>
 </html>
+
 
 
 
