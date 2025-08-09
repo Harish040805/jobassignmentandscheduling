@@ -103,13 +103,13 @@
       transition: all 0.3s ease;
     }
     .bottom-bar button.active {
-      background-color: var(--secondary);
-      color: white;
+      background-color: #eee;
+      color: var(--primary);
       border-color: white;
     }
     .bottom-bar button:hover {
-      background-color: var(--primary);
-      color: white;
+      background-color: #ddd;
+      color: var(--primary);
       cursor: pointer;
     }
     .modal {
