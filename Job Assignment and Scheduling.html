@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Job Assignment and Scheduling Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --primary: #7f00ff;
+      --secondary: #e100ff;
+      --background: #f9f4ff;
+      --light-purple: #d1b3ff;
+      --text: #2d0031;
+      --white: #ffffff;
+    }
+    body {
+      margin-bottom: 50px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+    }
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-top: 20px;
+    }
+    table {
+      width: 1000px;
+      max-width: 100%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      box-shadow: 0 4px 8px rgba(127, 0, 255, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px; 
+    }
+    table thead, table tbody, table tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      width: 120px;
+      white-space: nowrap;
+    }
+    th {
+      background-color: var(--primary);
+      color: var(--white);
+      font-weight: 600;
+    }
+    th[title] {
+      cursor: help;
+    }
+    input {
+      width: 80%;
+      padding: 6px;
+      border: 1px solid var(--light-purple);
+      border-radius: 4px;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 5px var(--light-purple);
+    }
+    td[data-output="true"] {
+      background-color: #f1e6ff;
+      font-weight: bold;
+    }
+    td[data-output="true"] input {
+      background-color: transparent;
+      border: none;
+      pointer-events: none;
+    }
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 18px;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .bottom-bar button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .bottom-bar button.active {
+      background-color: var(--secondary);
+      color: white;
+      border-color: white;
+    }
+    .bottom-bar button:hover {
+      background-color: var(--primary);
+      color: white;
+      cursor: pointer;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(127, 0, 255, 0.3);
+    }
+    .close {
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--secondary);
+    }
+    .representation-box {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 8px;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    @media (max-width: 480px) {
+      th, td { padding: 8px; font-size: 13px; }
+      .bottom-bar button { padding: 8px 12px; font-size: 14px; }
+    }
+.radio-option {
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 16px;
+}
+.radio-option label {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.radio-option input[type="radio"] {
+  transform: scale(1.1);
+}
+  </style>
+</head>
+<body>
+  <h2>Job Assignment and Scheduling Simulator</h2>
+  <div class="table-container">
+    <table id="myTable">
+      <thead>
+        <tr>
+          <th title="Unique identifier for each process">Process</th>
+          <th title="Time at which process arrives">Arrival Time</th>
+          <th title="Time required by process to complete">Burst Time</th>
+          <th title="Priority (lower number = higher priority)">Priority</th>
+          <th title="Time at which process completes">Completion Time</th>
+          <th title="Turn Around Time = Completion - Arrival">Turn Around Time</th>
+          <th title="Waiting Time = Turnaround - Burst">Waiting Time</th>
+          <th title="Response Time = Time until first execution">Response Time</th>
+          <th title="Delete the process row">Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="bottom-bar">
+    <button onclick="addRow()">Add Row</button>
+    <button onclick="showRepresentation()">Representation</button>
+    <button onclick="showAlgorithmModal()" id="algoBtn">Algorithm: FCFS</button>
+    <span id="avgTAT">Average TAT: 0</span>
+    <span id="avgWT" style="margin-left:20px;">Average WT: 0</span>
+  </div>
+
+  <div id="representationModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 style="color: var(--primary)">Process Representation</h3>
+      <div id="representationRow"></div>
+    </div>
+  </div>
+
+  <div id="algorithmModal" class="modal">
+    <div class="modal-content" style="text-align: left;">
+      <span class="close" onclick="closeAlgorithmModal()">&times;</span>
+      <h3 style="color: var(--primary)">Select Algorithm Option</h3>
+<form>
+  <div class="radio-option">
+    <label>
+      <input type="radio" name="option" value="1" checked onchange="setAlgorithm(this)">
+      First Come First Serve
+    </label>
+  </div>
+  <div class="radio-option">
+    <label>
+      <input type="radio" name="option" value="2" onchange="setAlgorithm(this)">
+      Shortest Job First
+    </label>
+  </div>
+  <div class="radio-option">
+    <label>
+      <input type="radio" name="option" value="3" onchange="setAlgorithm(this)">
+      Round Robin
+    </label>
+  </div>
+  <div class="radio-option">
+    <label>
+      <input type="radio" name="option" value="4" onchange="setAlgorithm(this)">
+      Priority Scheduling
+    </label>
+  </div>
+</form>
+    </div>
+  </div>
+
+  <script>
+    let selectedAlgorithm = "1";
+    let executionOrder = [];
+
+    function addRow() {
+      const tableBody = document.querySelector("#myTable tbody");
+
+      const newRow = document.createElement("tr");
+
+      const placeholders = ["P", "AT", "BT", "PR", "CT", "TAT", "WT", "RT"];
+      for (let i = 0; i < placeholders.length; i++) {
+        const cell = document.createElement("td");
+        const input = document.createElement("input");
+        if (i === 0) { input.type = "text"; input.placeholder = placeholders[i]; }
+        else { input.type = "number"; input.placeholder = placeholders[i]; }
+
+        if (i >= 4) {
+          input.readOnly = true;
+          cell.setAttribute("data-output", "true");
+        } else {
+          input.addEventListener("input", calculateResults);
+        }
+
+        cell.appendChild(input);
+        newRow.appendChild(cell);
+      }
+
+      const deleteCell = document.createElement("td");
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+      deleteButton.style.backgroundColor = "red";
+      deleteButton.style.color = "white";
+      deleteButton.onclick = () => {
+        tableBody.removeChild(newRow);
+        calculateResults();
+      };
+      deleteCell.appendChild(deleteButton);
+      newRow.appendChild(deleteCell);
+
+      tableBody.appendChild(newRow);
+      calculateResults();
+    }
+
+    function getProcessRows() {
+      const allRows = Array.from(document.querySelectorAll("#myTable tbody tr"));
+      return allRows;
+    }
+
+    function calculateResults() {
+      const rows = getProcessRows();
+      const processes = [];
+
+      rows.forEach(row => {
+        const name = row.cells[0].querySelector("input").value.trim();
+        const atVal = row.cells[1].querySelector("input").value;
+        const btVal = row.cells[2].querySelector("input").value;
+        const prVal = row.cells[3].querySelector("input").value;
+
+        const at = atVal === "" ? NaN : parseInt(atVal, 10);
+        const bt = btVal === "" ? NaN : parseInt(btVal, 10);
+        const pr = prVal === "" ? undefined : parseInt(prVal, 10);
+
+        if (name && !isNaN(at) && !isNaN(bt)) {
+          processes.push({ name, at, bt, pr, row });
+        } else {
+          row.cells[4].querySelector("input").value = "";
+          row.cells[5].querySelector("input").value = "";
+          row.cells[6].querySelector("input").value = "";
+          row.cells[7].querySelector("input").value = "";
+        }
+      });
+
+      if (processes.length === 0) {
+        executionOrder = [];
+        updateRepresentationFrame();
+        updateAverages(0, 0);
+        return;
+      }
+
+      if (selectedAlgorithm === "1") {
+        applyFCFS(processes);
+      } else if (selectedAlgorithm === "2") {
+        applySJF(processes);
+      } else if (selectedAlgorithm === "3") {
+        applyRoundRobin(processes);
+      } else if (selectedAlgorithm === "4") {
+        applyPriority(processes);
+      } else {
+        executionOrder = [];
+      }
+
+      updateRepresentationFrame();
+    }
+
+    function applyFCFS(processes) {
+      executionOrder = [];
+      processes.sort((a, b) => {
+        if (a.at !== b.at) return a.at - b.at;
+        return a.name.localeCompare(b.name);
+      });
+
+      let currentTime = 0;
+      let totalTAT = 0, totalWT = 0;
+
+      processes.forEach(p => {
+        const start = Math.max(currentTime, p.at);
+        const ct = start + p.bt;
+        const tat = ct - p.at;
+        const wt = tat - p.bt;
+        const rt = start - p.at;
+
+        currentTime = ct;
+
+        p.row.cells[4].querySelector("input").value = ct;
+        p.row.cells[5].querySelector("input").value = tat;
+        p.row.cells[6].querySelector("input").value = wt;
+        p.row.cells[7].querySelector("input").value = rt;
+
+        totalTAT += tat;
+        totalWT += wt;
+        executionOrder.push(p.name);
+      });
+
+      const avgTAT = totalTAT / processes.length;
+      const avgWT = totalWT / processes.length;
+      updateAverages(avgTAT, avgWT);
+    }
+
+    function applySJF(processes) {
+      executionOrder = [];
+      const n = processes.length;
+      const isCompleted = new Array(n).fill(false);
+      let time = Math.min(...processes.map(p => p.at));
+      let completed = 0;
+      let totalTAT = 0, totalWT = 0;
+
+      while (completed < n) {
+        let idx = -1;
+        let minBT = Infinity;
+        for (let i = 0; i < n; i++) {
+          if (!isCompleted[i] && processes[i].at <= time && processes[i].bt < minBT) {
+            minBT = processes[i].bt;
+            idx = i;
+          }
+        }
+
+        if (idx === -1) {
+          time++;
+        } else {
+          const p = processes[idx];
+          const start = time;
+          const ct = start + p.bt;
+          const tat = ct - p.at;
+          const wt = tat - p.bt;
+          const rt = start - p.at;
+
+          p.row.cells[4].querySelector("input").value = ct;
+          p.row.cells[5].querySelector("input").value = tat;
+          p.row.cells[6].querySelector("input").value = wt;
+          p.row.cells[7].querySelector("input").value = rt;
+
+          totalTAT += tat;
+          totalWT += wt;
+          isCompleted[idx] = true;
+          completed++;
+          time = ct;
+
+          executionOrder.push(p.name);
+        }
+      }
+
+      const avgTAT = totalTAT / n;
+      const avgWT = totalWT / n;
+      updateAverages(avgTAT, avgWT);
+    }
+
+    function applyRoundRobin(processes) {
+      executionOrder = [];
+
+      let tqInput = prompt("Enter time quantum (positive integer):", "2");
+      if (tqInput === null) {
+        tqInput = "2";
+      }
+      let tq = parseInt(tqInput, 10);
+      if (isNaN(tq) || tq <= 0) {
+        alert("Invalid quantum. Using default quantum = 2");
+        tq = 2;
+      }
+
+      processes.sort((a, b) => (a.at - b.at) || a.name.localeCompare(b.name));
+
+      const n = processes.length;
+      const remaining = processes.map(p => p.bt);
+      const arrival = processes.map(p => p.at);
+      const name = processes.map(p => p.name);
+      const rowRefs = processes.map(p => p.row);
+
+      const isStarted = new Array(n).fill(false);
+      const completion = new Array(n).fill(0);
+      const response = new Array(n).fill(-1);
+
+      let time = Math.min(...arrival);
+      const q = [];
+      const visited = new Array(n).fill(false);
+
+      for (let i = 0; i < n; i++) {
+        if (arrival[i] <= time) {
+          q.push(i);
+          visited[i] = true;
+        }
+      }
+
+      if (q.length === 0) {
+        q.push(0);
+        visited[0] = true;
+        time = arrival[0];
+      }
+
+      let totalTAT = 0, totalWT = 0;
+      while (q.length > 0) {
+        const idx = q.shift();
+        if (!isStarted[idx]) {
+          isStarted[idx] = true;
+          if (response[idx] === -1) response[idx] = Math.max(time, arrival[idx]) - arrival[idx];
+          if (time < arrival[idx]) time = arrival[idx];
+        }
+
+        const exec = Math.min(tq, remaining[idx]);
+        time += exec;
+        remaining[idx] -= exec;
+
+        executionOrder.push(name[idx]);
+
+        for (let j = 0; j < n; j++) {
+          if (!visited[j] && arrival[j] <= time) {
+            q.push(j);
+            visited[j] = true;
+          }
+        }
+
+        if (remaining[idx] > 0) {
+          q.push(idx);
+        } else {
+          completion[idx] = time;
+          const tat = completion[idx] - arrival[idx];
+          const wt = tat - processes[idx].bt;
+          totalTAT += tat;
+          totalWT += wt;
+          rowRefs[idx].cells[4].querySelector("input").value = completion[idx];
+          rowRefs[idx].cells[5].querySelector("input").value = tat;
+          rowRefs[idx].cells[6].querySelector("input").value = wt;
+          rowRefs[idx].cells[7].querySelector("input").value = response[idx] === -1 ? 0 : response[idx];
+        }
+
+        if (q.length === 0) {
+          for (let j = 0; j < n; j++) {
+            if (remaining[j] > 0 && !visited[j]) {
+              q.push(j);
+              visited[j] = true;
+              if (time < arrival[j]) time = arrival[j];
+              break;
+            }
+          }
+        }
+      }
+
+      const avgTAT = totalTAT / n;
+      const avgWT = totalWT / n;
+      updateAverages(avgTAT, avgWT);
+    }
+
+    function applyPriority(processes) {
+      executionOrder = [];
+      processes.forEach(p => {
+        if (p.pr === undefined || isNaN(p.pr)) {
+          p.pr = 999999; 
+        }
+      });
+
+      const n = processes.length;
+      const isCompleted = new Array(n).fill(false);
+      let time = Math.min(...processes.map(p => p.at));
+      let completed = 0;
+      let totalTAT = 0, totalWT = 0;
+
+      while (completed < n) {
+        let idx = -1;
+        let minPr = Infinity;
+        for (let i = 0; i < n; i++) {
+          if (!isCompleted[i] && processes[i].at <= time && processes[i].pr < minPr) {
+            minPr = processes[i].pr;
+            idx = i;
+          }
+        }
+
+        if (idx === -1) {
+          time++;
+        } else {
+          const p = processes[idx];
+          const start = time;
+          const ct = start + p.bt;
+          const tat = ct - p.at;
+          const wt = tat - p.bt;
+          const rt = start - p.at;
+
+          p.row.cells[4].querySelector("input").value = ct;
+          p.row.cells[5].querySelector("input").value = tat;
+          p.row.cells[6].querySelector("input").value = wt;
+          p.row.cells[7].querySelector("input").value = rt;
+
+          totalTAT += tat;
+          totalWT += wt;
+          isCompleted[idx] = true;
+          completed++;
+          time = ct;
+
+          executionOrder.push(p.name);
+        }
+      }
+
+      const avgTAT = totalTAT / n;
+      const avgWT = totalWT / n;
+      updateAverages(avgTAT, avgWT);
+    }
+
+    function updateAverages(avgTAT, avgWT) {
+      document.getElementById("avgTAT").textContent = `Average TAT: ${avgTAT.toFixed(2)}`;
+      document.getElementById("avgWT").textContent = `Average WT: ${avgWT.toFixed(2)}`;
+    }
+
+    function updateRepresentationFrame() {
+      const container = document.getElementById("representationRow");
+      container.innerHTML = "";
+
+      executionOrder.forEach(proc => {
+        const box = document.createElement("div");
+        box.className = "representation-box";
+        box.textContent = proc;
+        container.appendChild(box);
+      });
+    }
+
+    function showRepresentation() {
+      document.getElementById("representationModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("representationModal").style.display = "none";
+    }
+
+    function showAlgorithmModal() {
+      document.getElementById("algorithmModal").style.display = "block";
+    }
+
+    function closeAlgorithmModal() {
+      document.getElementById("algorithmModal").style.display = "none";
+    }
+
+    function setAlgorithm(radio) {
+      selectedAlgorithm = radio.value;
+      const algoBtn = document.getElementById("algoBtn");
+      if (selectedAlgorithm === "1") algoBtn.textContent = "Algorithm: FCFS";
+      else if (selectedAlgorithm === "2") algoBtn.textContent = "Algorithm: SJF";
+      else if (selectedAlgorithm === "3") algoBtn.textContent = "Algorithm: Round Robin";
+      else if (selectedAlgorithm === "4") algoBtn.textContent = "Algorithm: Priority Scheduling";
+
+      calculateResults();
+      closeAlgorithmModal();
+    }
+
+    for (let i = 0; i < 3; i++) addRow();
+  </script>
+</body>
+</html>
