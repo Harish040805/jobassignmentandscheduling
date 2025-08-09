@@ -6,6 +6,15 @@
   <link rel="stylesheet" href="jobassignmentandschedulingcss.css">
 </head>
 <body>
+<button class="info-button" aria-label="Information" id="infoBtn">i</button>
+<div id="backgroundOverlay"></div>
+<div id="iframeOverlay">
+  <div id="iframeHeader">
+    <span>Information</span>
+    <button id="closeBtn" aria-label="Close">&times;</button>
+  </div>
+  <iframe srcdoc="<p style='font-family: Arial; font-size: 18px; margin: 20px;'>Hello!</p>"></iframe>
+</div>
   <h2>Job Assignment and Scheduling Simulator</h2>
   <div class="table-container">
     <table id="myTable">
@@ -77,6 +86,7 @@
 <script src="jobassignmentandschedulingjs.js"></script>
 </body>
 </html>
+
 
 
 
