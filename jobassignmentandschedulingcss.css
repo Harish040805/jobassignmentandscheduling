@@ -189,8 +189,8 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 700px;
-    height: 600px;
+    width: 80vw;
+    height: 90vh;
     transform: translate(-50%, -50%);
     border: 2px solid #007bff;
     border-radius: 8px;
