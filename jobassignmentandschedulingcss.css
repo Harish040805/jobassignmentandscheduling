@@ -1,9 +1,6 @@
 :root {
-  --primary: #7f00ff;
-  --secondary: #e100ff;
-  --background: #f9f4ff;
+  --primary: #c678d6;
   --light-purple: #d1b3ff;
-  --text: #2d0031;
   --white: #ffffff;
   --info-blue: #007bff; 
 }
@@ -11,8 +8,7 @@
 body {
   margin-bottom: 50px;
   font-family: 'Segoe UI', sans-serif;
-  background-color: var(--background);
-  color: var(--text);
+  background-color: #f9f4ff;
 }
 
 h2 {
@@ -152,7 +148,7 @@ td[data-output="true"] input {
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;
-  color: var(--secondary);
+  color: var(--primary);
 }
 
 .representation-box {
