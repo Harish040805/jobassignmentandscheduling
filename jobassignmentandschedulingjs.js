@@ -1,3 +1,20 @@
+  const infoBtn = document.getElementById('infoBtn');
+  const iframeOverlay = document.getElementById('iframeOverlay');
+  const closeBtn = document.getElementById('closeBtn');
+  const backgroundOverlay = document.getElementById('backgroundOverlay');
+  infoBtn.addEventListener('click', () => {
+    iframeOverlay.style.display = 'block';
+    backgroundOverlay.style.display = 'block';
+  });
+  closeBtn.addEventListener('click', () => {
+    iframeOverlay.style.display = 'none';
+    backgroundOverlay.style.display = 'none';
+  });
+  backgroundOverlay.addEventListener('click', () => {
+    iframeOverlay.style.display = 'none';
+    backgroundOverlay.style.display = 'none';
+  });
+
     let selectedAlgorithm = "1";
     let executionOrder = [];
 
