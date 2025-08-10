@@ -6,6 +6,42 @@
   <link rel="stylesheet" href="jobassignmentandschedulingcss.css">
 </head>
 <body>
+<iframe id="overlay" srcdoc='
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #e91e63;
+        }
+    </style>
+    <body>
+        <button id="enterBtn">Enter</button>
+        <script>
+            document.getElementById("enterBtn").onclick = function() {
+                parent.document.getElementById("overlay").remove();
+                parent.document.getElementById("mainContent").style.display = "block";
+            };
+        </script>
+    </body>
+'></iframe>  
 <button class="info-button" aria-label="Information" id="infoBtn">i</button>
 <div id="backgroundOverlay"></div>
 <div id="iframeOverlay">
@@ -111,6 +147,7 @@
 <script src="jobassignmentandschedulingjs.js"></script>
 </body>
 </html>
+
 
 
 
