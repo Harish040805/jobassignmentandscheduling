@@ -5,52 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="jobassignmentandschedulingcss.css">
 </head>
-<body>
-<iframe id="overlay" srcdoc='
-<style>
-    body {
-        margin: 0;
-        padding: 50px 0;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background: #B45AC6;
-        color: #fff;
-        font-family: Arial, sans-serif; 
-    }
-    h1 {
-        margin-bottom: 20px;
-        font-weight: bold;
-        color: #fff;
-    }
-    button {
-        padding: 10px 20px;
-        font-size: 1.2rem;
-        cursor: pointer;
-        background: #B45AC6;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-    button:hover {
-        background: #A34AB5; 
-    }
-</style>
-<body>
-    <h1>Job Assignment and Scheduling Simulator</h1>
-    <button id="enterBtn">Enter</button>
-    <script>
-        document.getElementById("enterBtn").onclick = function() {
-            parent.document.getElementById("overlay").remove();
-            parent.document.getElementById("mainContent").style.display = "block";
-        };
-    </script>
-</body>
+<body><script>
+const iframe = document.createElement('iframe');
+iframe.style.position = 'fixed';
+iframe.style.top = '0';
+iframe.style.left = '0';
+iframe.style.width = '100%';
+iframe.style.height = '100%';
+iframe.style.zIndex = '9999';
+iframe.style.border = 'none';
 
-'></iframe>  
+const iframeContent = `
+  <html>
+    <head>
+      <style>
+        button {
+          padding: 10px 20px; 
+          border: none; 
+          border-radius: 5px; 
+          background-color: #C7B8EA; 
+          color: #000000; 
+          cursor: pointer;
+        }
+        button:hover {
+          background-color: #B294C7;
+        }
+      </style>
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #7a288a; text-align: center; margin-top: 20%;">
+      <h1 style="color: #fff;">Job Assignment and Scheduling Simulator</h1>
+      <button onclick="parent.document.body.removeChild(parent.document.querySelector('iframe'));">Enter</button>
+    </body>
+  </html>
+`;
+
+iframe.srcdoc = iframeContent;
+document.body.appendChild(iframe);
+</script>
 <button class="info-button" aria-label="Information" id="infoBtn">i</button>
 <div id="backgroundOverlay"></div>
 <div id="iframeOverlay">
@@ -156,6 +147,7 @@
 <script src="jobassignmentandschedulingjs.js"></script>
 </body>
 </html>
+
 
 
 
