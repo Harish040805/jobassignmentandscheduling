@@ -5,7 +5,231 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="jobassignmentandschedulingcss.css">
 </head>
-<body><script>
+<body>
+<div id="draggableainameWidget" style="position:relative; width:100%; height:100%;">
+  <button id="draggableainameFloatButton"
+    style="position:absolute; top:90%; left:5%; transform:translate(-50%,-50%);
+           padding:20px 24px; background-color:#0077cc; color:#fff; border:5px solid #fff;
+           border-radius:50%; cursor:grab; font-size:20px; font-weight:bold;
+           box-shadow:0 4px 8px rgba(0,0,0,0.2); user-select:none; z-index:1000;">
+    AI
+  </button>
+
+  <iframe id="draggableainameIframe"
+    style="position:fixed; top:0; right:0; width:20vw; height:100vh; border:none; background:#fff;
+           box-shadow:-4px 0 12px rgba(0,0,0,0.2); display:none; z-index:999;"
+    srcdoc="<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<style>
+  body { margin:0; font-family:Arial,sans-serif; background:#fff; display:flex; flex-direction:column; height:100%; }
+  #draggableainameHeader { position:relative; background:#0077cc; color:#fff; text-align:center; padding:12px; font-weight:bold; font-size:18px; }
+  #draggableainameCloseButton { position:absolute; top:10px; right:10px; padding:6px 12px; background:#ff0000; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+  #draggableainameCloseButton:hover { opacity:.9; }
+  #draggableainameContent { flex:1; padding:10px; display:flex; flex-direction:column; gap:10px; }
+  #draggableainameUserInput { width:90%; padding:8px; font-size:14px; border:1px solid #ccc; border-radius:6px; }
+  .draggableainameAskButton { padding:8px; background:#0077cc; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; }
+  .draggableainameAskButton:hover { background:#005fa3; }
+  #draggableainameResponse { margin-top:10px; font-size:14px; color:#333; overflow-y:auto; max-height:70%; border-top:1px solid #ccc; padding-top:8px; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+  <div id='draggableainameHeader'>Ask AI
+    <button id='draggableainameCloseButton' aria-label='Close panel'>X</button>
+  </div>
+  <div id='draggableainameContent'>
+    <input type='text' id='draggableainameUserInput' placeholder='Type your question...'>
+    <button class='draggableainameAskButton' id='draggableainameAskButton'>Ask AI</button>
+    <div id='draggableainameResponse'>Response will appear here...</div>
+  </div>
+<script>
+  (function(){
+    const draggableainameAskButton = document.getElementById('draggableainameAskButton');
+    const draggableainameResponse = document.getElementById('draggableainameResponse');
+    const draggableainameUserInput = document.getElementById('draggableainameUserInput');
+    const draggableainameCloseButton = document.getElementById('draggableainameCloseButton');
+
+    draggableainameCloseButton.addEventListener('click', function(){
+      parent.postMessage({ type: 'draggableainame-close-iframe' }, '*');
+    });
+
+    draggableainameAskButton.addEventListener('click', async function(){
+      const draggableainameQuestion = (draggableainameUserInput.value || '').trim();
+      if(!draggableainameQuestion){
+        draggableainameResponse.innerHTML = '<span style=&quot;color:red;&quot;>Please enter a question.</span>';
+        return;
+      }
+      draggableainameResponse.innerHTML = '<em>Thinking...</em>';
+
+      try {
+        const draggableainameRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC5ab-HZmvtoTEXMRBMb4-tPpwD2yMVF1A', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [ { parts: [ { text: draggableainameQuestion } ] } ] })
+        });
+        const draggableainameData = await draggableainameRes.json();
+        const draggableainameText =
+          (draggableainameData && draggableainameData.candidates && draggableainameData.candidates[0] &&
+           draggableainameData.candidates[0].content && draggableainameData.candidates[0].content.parts &&
+           draggableainameData.candidates[0].content.parts[0] && draggableainameData.candidates[0].content.parts[0].text)
+           || 'No response from AI.';
+        draggableainameResponse.textContent = draggableainameText;
+      } catch (draggableainameErr) {
+        draggableainameResponse.textContent = 'Error: ' + draggableainameErr.message;
+      }
+    });
+  })();
+</script>
+</body>
+</html>">
+  </iframe>
+
+  <script>
+    (function(){
+      const draggableainameFloatButton = document.getElementById('draggableainameFloatButton');
+      const draggableainameIframe = document.getElementById('draggableainameIframe');
+
+      draggableainameFloatButton.addEventListener('click', function(){
+        draggableainameIframe.style.display = 'block';
+        draggableainameFloatButton.style.display = 'none';
+      });
+
+      window.addEventListener('message', function(e){
+        if(e && e.data && e.data.type === 'draggableainame-close-iframe'){
+          draggableainameIframe.style.display = 'none';
+          draggableainameFloatButton.style.display = 'inline-block';
+        }
+      });
+
+      let draggableainameIsDragging = false;
+      let draggableainameStartX = 0, draggableainameStartY = 0;
+      let draggableainameOffsetX = 0, draggableainameOffsetY = 0;
+
+      const draggableainameStartDrag = function(ev){
+        ev.preventDefault();
+        draggableainameIsDragging = false;
+
+        const point = ev.touches ? ev.touches[0] : ev;
+        draggableainameStartX = point.clientX;
+        draggableainameStartY = point.clientY;
+
+        draggableainameOffsetX = draggableainameFloatButton.offsetLeft;
+        draggableainameOffsetY = draggableainameFloatButton.offsetTop;
+
+        document.addEventListener('mousemove', draggableainameOnMove);
+        document.addEventListener('mouseup', draggableainameStopDrag);
+        document.addEventListener('touchmove', draggableainameOnMove, { passive: false });
+        document.addEventListener('touchend', draggableainameStopDrag);
+      };
+
+      const draggableainameOnMove = function(ev){
+        ev.preventDefault();
+        const point = ev.touches ? ev.touches[0] : ev;
+        const dx = point.clientX - draggableainameStartX;
+        const dy = point.clientY - draggableainameStartY;
+
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) draggableainameIsDragging = true;
+
+        if (draggableainameIsDragging) {
+          let newX = draggableainameOffsetX + dx;
+          let newY = draggableainameOffsetY + dy;
+
+          const maxX = window.innerWidth - draggableainameFloatButton.offsetWidth;
+          const maxY = window.innerHeight - draggableainameFloatButton.offsetHeight;
+
+          newX = Math.max(0, Math.min(newX, maxX));
+          newY = Math.max(0, Math.min(newY, maxY));
+
+          draggableainameFloatButton.style.left = newX + 'px';
+          draggableainameFloatButton.style.top = newY + 'px';
+        }
+      };
+
+      const draggableainameStopDrag = function(){
+        document.removeEventListener('mousemove', draggableainameOnMove);
+        document.removeEventListener('mouseup', draggableainameStopDrag);
+        document.removeEventListener('touchmove', draggableainameOnMove);
+        document.removeEventListener('touchend', draggableainameStopDrag);
+      };
+
+      draggableainameFloatButton.addEventListener('mousedown', draggableainameStartDrag);
+      draggableainameFloatButton.addEventListener('touchstart', draggableainameStartDrag, { passive: false });
+    })();
+  </script>
+</div>	            
+        <img src="https://avatars.githubusercontent.com/u/188087585?v=4&size=64" style="border-radius: 30%;"><br>
+        <h3 style="color: #000;">Harish Creations</h3>
+        <h1 style="color: #000;">Data Structures Algorithm Simulator</h1>
+        <h3 style="color: #000;"><i>AI Powered Simulation Site</i></h3>
+        <div style="height: 4em;"></div>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/primsalgorithmsimulation.html';">Prims</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/kruskalsalgorithmsimulation.html';">Kruskals</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/floydwarshallalgorithmsimulation.html';">Floyd Warshall</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/warshallsimulation.html';">Warshall</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/zeroneknapsacksimulation.html';">Zero One Knapsack</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/fractionalknapsacksimulation.html';">Fractional Knapsack</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/dijkstrasalgorithmsimulation.html';">Dijikstra</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/huffmanalgorithmsimulationfront.html';">Huffman</button>
+        <button type="button" class="btn" onclick="window.location.href='https://harish040805.github.io/newdatastructureconcepts/cycledetection.html';">Cycle Detection</button>
+        <button type="button" class="btn" id="about-btn">About</button>
+    <br><br><br>
+<div id="about-iframe-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
+  <div style="width: 100%; height: 100%; position: relative;">
+    <iframe srcdoc="
+      <html>
+        <head>
+          <style>
+            body {
+              background-color: #333;
+              color: white;
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              padding: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          <h2>Welcome to Algorithm Visualizer!</h2> 
+          <br><br>
+          This website provides interactive visualization and simulation of various algorithms, including:
+          <br>
+          - Floyd Warshall Algorithm (All-Pairs Shortest Path)
+          <br>
+          - 0/1 Knapsack Problem (Dynamic Programming)
+          <br>
+          - Fractional Knapsack Problem (Greedy Algorithm)
+          <br>
+          - Dijkstra's Algorithm (Single-Source Shortest Path)
+          <br><br>
+          <h2>How to use this website:</h2>
+          <br>
+          1. Select an algorithm from the menu to view its simulation.
+          <br>
+          2. Use the interactive tools to input data and run the algorithm.
+          <br>
+          3. Observe the step-by-step visualization to understand the algorithm's working.
+          <br><br>
+          These algorithms are fundamental concepts in computer science, and understanding them is crucial for solving complex problems in various fields.
+        </body>
+      </html>
+    " frameborder="0" width="100%" height="100%"></iframe>
+    <span style="position: absolute; top: 10px; right: 10px; font-size: 18px; cursor: pointer; background-color: red; color: white; padding: 8px; border-radius: 50%;" id="about-close-btn">x</span>
+  </div>
+</div>
+<script>
+  const aboutBtn = document.getElementById('about-btn');
+  const aboutIframeOverlay = document.getElementById('about-iframe-overlay');
+  const aboutCloseBtn = document.getElementById('about-close-btn');
+  aboutBtn.addEventListener('click', () => {
+    aboutIframeOverlay.style.display = 'block';
+  });
+  aboutCloseBtn.addEventListener('click', () => {
+    aboutIframeOverlay.style.display = 'none';
+  });
+</script>
+    </div>  
+  <script>
 const iframe = document.createElement('iframe');
 iframe.style.position = 'fixed';
 iframe.style.top = '0';
@@ -147,6 +371,7 @@ document.body.appendChild(iframe);
 <script src="jobassignmentandschedulingjs.js"></script>
 </body>
 </html>
+
 
 
 
